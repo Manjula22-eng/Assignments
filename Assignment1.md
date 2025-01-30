@@ -1,4 +1,4 @@
-Documentation of the Dijkstra's Algorithm in 3D Grid with Visualization
+Documentation of the Dijkstra's Algorithm in 3D Grid with Visualizatio
 Objective:
 The objective of this implementation is to find the shortest paths between multiple pairs of start and end points in a 3D grid using Dijkstra's Algorithm. 
 The grid contains cells with weights that impact the path cost, and the goal is to compute the least cost path between given start and end points. 
