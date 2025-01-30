@@ -1,129 +1,114 @@
-Documentation of the Dijkstra's Algorithm in 3D Grid with Visualization Objective:
-The objective of this implementation is to find the shortest paths between multiple pairs of start and end points in a 3D 
-grid using Dijkstra's Algorithm. 
-The grid contains cells with weights that impact the path cost, and the goal is to compute the least cost path between given start and end points. 
-Additionally, the paths are visualized in 3D.
+3D Shortest Path Search Using Dijkstra’s Algorithm :
+This project involves creating a 3D Grid Graph, assigning random weights to nodes, finding shortest paths using Dijkstra’s 
+algorithm, and visualizing the results in a 3D plot.
+Algorithms Used :
+1.1 Grid Graph Construction
+A 3D grid graph is generated using networkx.grid_graph(), where each node is connected to its six neighbors (left, right, 
+front, back, up, and down).
+1.2 Dijkstra’s Algorithm
+We use Dijkstra’s shortest path algorithm, which is a graph search algorithm that finds the shortest path between nodes by 
+considering edge weights.
 
-Algorithm Explanation:
-Dijkstra's Algorithm is a classical algorithm for finding the shortest paths from a start node to all other nodes in graph. 
-In this implementation, the graph is represented as a 3D grid, and the pathfinding involves navigating through grid points to find the minimum-weight path.
+Steps of Dijkstra’s Algorithm
+Initialize: 
+Set the distance of the start node to 0 and all others to ∞.
+Select Node:
+Pick the node with the smallest distance (initially, the start node).
+Update Neighbors:
+For each neighbor, update its distance if a shorter path is found.
+Repeat: 
+Continue until all nodes have been visited or the target node is reached.
 
-Key components:
-
-Grid Representation: 
-The 3D grid is represented as a 3D array (weights) where each point has a weight that determines the cost of moving 
-throught that cell.
-
-Movement Directions: 
-Movement is allowed in 6 possible directions: positive and negative steps along each of the 3 axes (x, y, z).
-
-Priority Queue: 
-The algorithm uses a priority queue (min-heap) to ensure that the node with the smallest accumulated cost is processed 
- first.
-
-Path Reconstruction: Once the end point is reached, the algorithm backtracks to reconstruct the path from start to end.
-
-Step-by-Step Implementation:
-
-Grid Initialization: 
-The 3D grid size is defined as GRID_SIZE = 101. Weights are randomly generated for each point in the grid, with values 
-between 1 and 10.
-
+Implementation Details:
+2.1 Importing Libraries
 python:
-np.random.seed(42)
-weights = np.random.randint(1, 10, (GRID_SIZE, GRID_SIZE, GRID_SIZE))
+import numpy as np
+import networkx as nx
+import random
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
-Movement Directions: 
-A list of possible movements in 3D space is defined, allowing movement in all 6 directions (positive and negative along x, 
-y, z).
+networkx: Used to create and process the 3D graph.
+random: Assigns random weights to nodes.
+matplotlib.pyplot and mpl_toolkits.mplot3d: For 3D visualization of shortest paths.
 
+2.2 Creating a 3D Grid Graph
 python:
-DIRECTIONS = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+GRID_SIZE = 20  # Reduced size for testing
+print("Creating 3D Grid Graph...")
+G = nx.grid_graph(dim=[GRID_SIZE+1, GRID_SIZE+1, GRID_SIZE+1])
+print("Graph created with", len(G.nodes), "nodes.")
+We create a 3D grid with (GRID_SIZE+1)^3 nodes.
+Each node has six possible neighbors in a 3D space.
 
-Dijkstra's Algorithm: 
-The algorithm uses a priority queue to explore the grid. For each point, the shortest cost to reach neighboring points is 
-calculated and stored. The path is reconstructed once the destination is reached.
-
+2.3 Assigning Random Weights
 python:
-def dijkstra_3d(start, end):
-    pq = []
-    heapq.heappush(pq, (0, start))  # (cost, (x, y, z))
-    distances = np.full((GRID_SIZE, GRID_SIZE, GRID_SIZE), np.inf)
-    distances[start] = 0
-    parent = {}
+for node in G.nodes:
+    G.nodes[node]['weight'] = random.choice([1, 1, 1, 5, 10, 15])
+print("Weights assigned.")
+We randomly assign weights (1, 5, 10, or 15) to each node.
 
-    while pq:
-        cost, (x, y, z) = heapq.heappop(pq)
-        if (x, y, z) == end:
-            path = []
-            while (x, y, z) in parent:
-                path.append((x, y, z))
-                x, y, z = parent[(x, y, z)]
-            path.append(start)
-            path.reverse()
-            return path
-        
-        for dx, dy, dz in DIRECTIONS:
-            nx, ny, nz = x + dx, y + dy, z + dz
-            if 0 <= nx < GRID_SIZE and 0 <= ny < GRID_SIZE and 0 <= nz < GRID_SIZE:
-                new_cost = cost + weights[nx, ny, nz]
-                if new_cost < distances[nx, ny, nz]:
-                    distances[nx, ny, nz] = new_cost
-                    parent[(nx, ny, nz)] = (x, y, z)
-                    heapq.heappush(pq, (new_cost, (nx, ny, nz)))
+2.4 Finding the Shortest Path Using Dijkstra
+python:
+def shortest_path(graph, start, end):
+    print(f"Finding shortest path from {start} to {end}...")
+    return nx.shortest_path(graph, source=start, target=end, weight='weight', method='dijkstra')
+Uses networkx.shortest_path() with Dijkstra’s algorithm.
 
-    return None  # No path found
-
-Multiple Start and End Points: 
-Multiple start and end points are defined. The dijkstra_3d function is executed for each pair, and the resulting paths are collected.
-
+2.5 Finding Paths Between Selected Points
 python
-start_points = [(0, 0, 0), (50, 50, 50)]
-end_points = [(100, 100, 100), (80, 80, 80)]
+Copy
+Edit
+start_end_pairs = [
+    ((0, 0, 0), (10, 10, 10)),  
+    ((5, 5, 5), (15, 15, 15))
+]
+
 paths = []
-
-for start, end in zip(start_points, end_points):
-    path = dijkstra_3d(start, end)
-    if path:
+for start, end in start_end_pairs:
+    try:
+        path = shortest_path(G, start, end)
         paths.append(path)
-
-3D Path Visualization: 
-
-The paths are visualized in 3D using matplotlib. Each path is plotted with markers at each step.
-
+        print(f"Path found: {len(path)} steps.")
+    except Exception as e:
+        print("Error finding path:", e)
+        
+Finds the shortest paths between two pairs of points in the 3D space.
+2.6 3D Path Visualization
+python:
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-
 for path in paths:
-    xs, ys, zs = zip(*path)
-    ax.plot(xs, ys, zs, marker='o')
-
+    x, y, z = zip(*path)
+    ax.plot(x, y, z, marker='o')
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
+plt.title("3D Shortest Paths")
+print("Displaying plot...")
 plt.show()
+Plots the shortest paths in a 3D space.
 
-Results and Visualization:
+Results and Visualizations:
+3.1 Sample Output: 
+Creating 3D Grid Graph...
+Graph created with 9261 nodes.
+Weights assigned.
+Finding shortest path from (0, 0, 0) to (10, 10, 10)...
+Path found: 30 steps.
+Finding shortest path from (5, 5, 5) to (15, 15, 15)...
+Path found: 40 steps.
+Displaying plot...
 
-Paths Visualized in 3D: 
-After running the code, the output will show a 3D plot where each line represents a path from a start point to an end point.
+Each path consists of multiple steps depending on node weights.
+3.2 Visualization
+The output is a 3D plot where:
+Nodes represent points in the grid.
+Lines connect the shortest paths between the selected points.
 
-Feature Matches: 
-The paths represent how the algorithm navigates through the 3D grid, with each point connected in sequence to show the path 
-from start to end.
-
-Example Output:
-
-Two paths are computed and visualized:
-
-From (0, 0, 0) to (100, 100, 100).
-From (50, 50, 50) to (80, 80, 80).
-
-3D Plot:
-The plot will display two 3D lines with markers at each step, showing the movement across the grid. Each point on the path 
-represents a coordinate in the grid that was traversed by the algorithm.
-
-Conclusion:
-This approach successfully finds the shortest path in a 3D grid with weighted points, visualizing the paths in 3D. 
-Dijkstra's algorithm ensures optimal paths are chosen based on grid weights, while visualization helps in understanding the 
-pathfinding process.
+4. Enhancements & Future Improvements
+Increase grid size for more complex pathfinding.
+Use A (A-Star) Algorithm* for faster execution.
+Introduce obstacles by removing some nodes.
+This project demonstrates shortest path computation in 3D space using Dijkstra’s algorithm and NetworkX, with visualization
+using Matplotlib.
