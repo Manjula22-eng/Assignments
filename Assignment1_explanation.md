@@ -96,3 +96,9 @@ Each path consists of multiple steps depending on node weights.
 The output is a 3D plot where:
 Nodes represent points in the grid.
 Lines show the shortest paths between selected points.
+
+Conclusion:
+This project finds the shortest path in a 3D grid using Dijkstra’s algorithm and visualizes it in 3D. It assigns random 
+weights to nodes and calculates the best route between selected points. Additionally, it detects and matches features 
+between images using ORB and FLANN in OpenCV. The results show efficient pathfinding and accurate feature matching, useful 
+for robotics, navigation, and computer vision applications. 
