@@ -34,7 +34,7 @@ matplotlib.pyplot → Visualizes paths in 3D.
 3.2 Creating a 3D Grid Graph
 python:
 GRID_SIZE = 20  # Define the grid size
-# Create a 3D grid graph
+Create a 3D Graph:
 G = nx.grid_graph(dim=[GRID_SIZE+1, GRID_SIZE+1, GRID_SIZE+1])
 print("Graph created with", len(G.nodes), "nodes.")
 Creates a 3D cube grid with (GRID_SIZE+1)^3 nodes.
@@ -70,7 +70,7 @@ Computes shortest paths for selected pairs of points.
 python:
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-# Plot each path
+Plot each other:
 for path in paths:
     x, y, z = zip(*path)
     ax.plot(x, y, z, marker='o')
